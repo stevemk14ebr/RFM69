@@ -1,3 +1,6 @@
+# This fork optimizes the interrupt handler execution time
+By default the receive functionality is called when an interrupt is fired by the rfm module. The logic is executed inside of the interrupt handler and takes a *relatively* long time to execute when in the presence of other interrupt handlers. Since arduino's do not support interrupt priority or interrupting interrupts (if they do i couldnt get it to work) this can cause issues. If some interrupt must fire on fixed interval it will be 'knocked-off' track by the rfm libraries long handler, to fix this port just sets a flag in the interrupt routine to fire the receive logic later. This flag is checked by the newly added function interruptTick() which should be called from loop(). This works because the rfm receive interrupt just marks the fifo as ready to read, so it's perfectly acceptable to read from it a few ms later when the loop() executes. I also removed the listen mode and ota logic since i didn't test this mode with those and i don't use them.
+
 # RFM69 Library  [![Build Status](https://travis-ci.org/LowPowerLab/RFM69.svg)](https://travis-ci.org/LowPowerLab/RFM69)
 
 By Felix Rusu, [LowPowerLab.com](http://LowPowerLab.com)
